@@ -11,7 +11,7 @@ Contributors: mordauk
 
 TODO
 - Add meta box in Replies dashboard to show notes
-
+- Notify moderators / admins participating in thread of new notes posted
 */
 
 class PW_BBP_Admin_Notes {
