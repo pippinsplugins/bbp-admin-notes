@@ -148,9 +148,12 @@ class PW_BBP_Admin_Notes {
 	 */
 
 	public function add_note_link( $links = '', $args = array() ) {
+
+		$reply_id = bbp_get_reply_id();
+
 		$links .= $args['before'];
-			$links .= '<a href="#" class="bbp-add-note" data-id="' . $args['id'] . '">' . __( 'Add Note', 'bbp-admin-notes' ) . '</a>';
-			$links .= '<a href="#" class="bbp-add-note" style="display:none;" data-id="' . $args['id'] . '">' . __( 'Hide Note', 'bbp-admin-notes' ) . '</a>';
+			$links .= '<a href="#" class="bbp-add-note" data-id="' . $reply_id . '">' . __( 'Add Note', 'bbp-admin-notes' ) . '</a>';
+			$links .= '<a href="#" class="bbp-add-note" style="display:none;" data-id="' . $reply_id . '">' . __( 'Hide Note', 'bbp-admin-notes' ) . '</a>';
 			$links .= $args['sep'] . '&nbsp;' . $args['after'];
 		return $links;
 	}
