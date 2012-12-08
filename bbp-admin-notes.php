@@ -152,8 +152,8 @@ class PW_BBP_Admin_Notes {
 		$reply_id = bbp_get_reply_id();
 
 		$links .= $args['before'];
-			$links .= '<a href="#" class="bbp-add-note" data-id="' . $reply_id . '">' . __( 'Add Note', 'bbp-admin-notes' ) . '</a>';
-			$links .= '<a href="#" class="bbp-add-note" style="display:none;" data-id="' . $reply_id . '">' . __( 'Hide Note', 'bbp-admin-notes' ) . '</a>';
+			$links .= '<a href="#" class="bbp-add-note bbp-add-note-' . $reply_id . '" data-id="' . $reply_id . '">' . __( 'Add Note', 'bbp-admin-notes' ) . '</a>';
+			$links .= '<a href="#" class="bbp-add-note bbp-add-note-' . $reply_id . '" style="display:none;" data-id="' . $reply_id . '">' . __( 'Hide Note', 'bbp-admin-notes' ) . '</a>';
 			$links .= $args['sep'] . '&nbsp;' . $args['after'];
 		return $links;
 	}
@@ -332,7 +332,7 @@ class PW_BBP_Admin_Notes {
 				e.preventDefault();
 				var id = $(this).data('id');
 				$('#bbp-add-note-form-' + id).slideToggle();
-				$('.bbp-add-note').toggle();
+				$('.bbp-add-note-' + id).toggle();
 			});
 		});
 	</script>
