@@ -148,7 +148,10 @@ class PW_BBP_Admin_Notes {
 	 */
 
 	public function add_note_link( $links = '', $args = array() ) {
-		$links .= $args['before'] . '<a href="#" class="bbp-add-note" data-id="' . $args['id'] . '">' . __( 'Add Note', 'bbp-admin-notes' ) . '</a>' . $args['sep'] . '&nbsp;' . $args['after'];
+		$links .= $args['before'];
+			$links .= '<a href="#" class="bbp-add-note" data-id="' . $args['id'] . '">' . __( 'Add Note', 'bbp-admin-notes' ) . '</a>';
+			$links .= '<a href="#" class="bbp-add-note" style="display:none;" data-id="' . $args['id'] . '">' . __( 'Hide Note', 'bbp-admin-notes' ) . '</a>';
+			$links .= $args['sep'] . '&nbsp;' . $args['after'];
 		return $links;
 	}
 
@@ -326,6 +329,7 @@ class PW_BBP_Admin_Notes {
 				e.preventDefault();
 				var id = $(this).data('id');
 				$('#bbp-add-note-form-' + id).slideToggle();
+				$('.bbp-add-note').toggle();
 			});
 		});
 	</script>
