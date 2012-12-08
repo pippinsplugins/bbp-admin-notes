@@ -188,7 +188,9 @@ class PW_BBP_Admin_Notes {
 
 	private function have_notes( $reply_id = 0 ) {
 	
-		return self::get_notes( $reply_id );
+		$notes = self::get_notes( $reply_id );
+
+		return ! empty( $notes ) ? $notes : array();
 	}
 
 
