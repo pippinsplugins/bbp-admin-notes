@@ -123,10 +123,10 @@ class PW_BBP_Admin_Notes {
 		$mofile_global = WP_LANG_DIR . '/bbp-admin-notes/' . $mofile;
 
 		if ( file_exists( $mofile_global ) ) {
-			// Look in global /wp-content/languages/edd folder
+			// Look in global /wp-content/languages/bbp-admin-notes folder
 			load_textdomain( 'bbp-admin-notes', $mofile_global );
 		} elseif ( file_exists( $mofile_local ) ) {
-			// Look in local /wp-content/plugins/easy-digital-downloads/languages/ folder
+			// Look in local /wp-content/plugins/bbp-admin-notes/languages/ folder
 			load_textdomain( 'bbp-admin-notes', $mofile_local );
 		} else {
 			// Load the default language files
