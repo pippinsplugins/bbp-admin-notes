@@ -53,7 +53,7 @@ class PW_BBP_Admin_Notes {
 
 
 	/**
-	 * Get this puppy started
+	 * Add all actions we need
 	 *
 	 * @since v1.0
 	 *
@@ -78,6 +78,14 @@ class PW_BBP_Admin_Notes {
 
 	}
 
+
+	/**
+	 * Add all filters we need
+	 *
+	 * @since v1.0
+	 *
+	 * @return void
+	 */
 
 	private function filters() {
 
