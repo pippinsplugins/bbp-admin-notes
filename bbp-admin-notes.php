@@ -149,6 +149,9 @@ class PW_BBP_Admin_Notes {
 
 	public function add_note_link( $links = '', $args = array() ) {
 
+		if( ! current_user_can( 'edit_forum', bbp_get_forum_id() ) )
+			return;
+
 		$reply_id = bbp_get_reply_id();
 
 		$links .= $args['before'];
