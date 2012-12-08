@@ -62,6 +62,9 @@ class PW_BBP_Admin_Notes {
 
 	private function actions() {
 
+		// load plugin text domain
+		add_action( 'init', array( __CLASS__, 'load_textdomain' ) );
+
 		// append the notes to the bottom of replies
 		add_action( 'bbp_theme_after_reply_content', array( __CLASS__, 'reply_notes' ) );
 
@@ -93,6 +96,38 @@ class PW_BBP_Admin_Notes {
 		// add our custom admin links
 		add_filter( 'bbp_get_reply_admin_links', array( __CLASS__, 'add_note_link' ), 10, 2 );
 
+	}
+
+
+	/**
+	 * Loads the plugin textdomain
+	 *
+	 * @since v1.0
+	 *
+	 * @return bool
+	 */
+
+	public function load_textdomain() {
+
+		// Traditional WordPress plugin locale filter
+		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'bbp-admin-notes' );
+		$mofile        = sprintf( '%1$s-%2$s.mo', 'bbp-admin-notes', $locale );
+
+		// Setup paths to current locale file
+		$mofile_local  = $this->lang_dir . $mofile;
+		$mofile_global = WP_LANG_DIR . '/bbpress/' . $mofile;
+
+		// Look in global /wp-content/languages/bbp-admin-notes folder
+		if ( file_exists( $mofile_global ) ) {
+			return load_textdomain( 'bbp-admin-notes', $mofile_global );
+
+		// Look in local /wp-content/plugins/bbp-admin-notes/bbp-languages/ folder
+		} elseif ( file_exists( $mofile_local ) ) {
+			return load_textdomain( 'bbp-admin-notes', $mofile_local );
+		}
+
+		// Nothing found
+		return false;
 	}
 
 	/**
