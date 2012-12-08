@@ -132,6 +132,7 @@ class PW_BBP_Admin_Notes {
 		if( ! current_user_can( 'edit_forum', bbp_get_forum_id() ) )
 			return;
 ?>
+		<h4><?php _e( 'Moderator Notes:', 'bbp-admin-notes' ); ?></h4>
 		<ul id="bbp-reply-<?php bbp_reply_id(); ?>-notes" class="bbp-reply-notes">
 			<?php foreach( self::have_notes( $reply_id ) as $note ) : ?>
 			<li class="bbp-reply-note" id="bbp-reply-note-<?php echo $note->comment_ID; ?>">
