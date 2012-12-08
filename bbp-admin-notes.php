@@ -304,4 +304,4 @@ class PW_BBP_Admin_Notes {
 }
 
 // load our class
-$GLOBALS['pw_bbp_admin_notes'] = PW_BBP_Admin_Notes::instance();;
+$GLOBALS['pw_bbp_admin_notes'] = PW_BBP_Admin_Notes::instance();
