@@ -68,6 +68,7 @@ class PW_BBP_Admin_Notes {
 		// output the add note form
 		add_action( 'bbp_theme_after_reply_content', array( __CLASS__, 'add_note_form' ) );
 
+		// save new notes
 		add_action( 'init', array( __CLASS__, 'save_note' ) );
 
 		// output our custom JS
