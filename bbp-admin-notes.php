@@ -109,25 +109,29 @@ class PW_BBP_Admin_Notes {
 
 	public function load_textdomain() {
 
+		// Set filter for plugin's languages directory
+		$lang_dir = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
+		$lang_dir = apply_filters( 'bbp_admin_notes_languages', $lang_dir );
+
+
 		// Traditional WordPress plugin locale filter
 		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'bbp-admin-notes' );
 		$mofile        = sprintf( '%1$s-%2$s.mo', 'bbp-admin-notes', $locale );
 
 		// Setup paths to current locale file
-		$mofile_local  = $this->lang_dir . $mofile;
-		$mofile_global = WP_LANG_DIR . '/bbpress/' . $mofile;
+		$mofile_local  = $lang_dir . $mofile;
+		$mofile_global = WP_LANG_DIR . '/bbp-admin-notes/' . $mofile;
 
-		// Look in global /wp-content/languages/bbp-admin-notes folder
 		if ( file_exists( $mofile_global ) ) {
-			return load_textdomain( 'bbp-admin-notes', $mofile_global );
-
-		// Look in local /wp-content/plugins/bbp-admin-notes/bbp-languages/ folder
+			// Look in global /wp-content/languages/edd folder
+			load_textdomain( 'bbp-admin-notes', $mofile_global );
 		} elseif ( file_exists( $mofile_local ) ) {
-			return load_textdomain( 'bbp-admin-notes', $mofile_local );
+			// Look in local /wp-content/plugins/easy-digital-downloads/languages/ folder
+			load_textdomain( 'bbp-admin-notes', $mofile_local );
+		} else {
+			// Load the default language files
+			load_plugin_textdomain( 'bbp-admin-notes', false, $lang_dir );
 		}
-
-		// Nothing found
-		return false;
 	}
 
 	/**
