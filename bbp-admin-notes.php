@@ -10,7 +10,6 @@ Contributors: mordauk
 
 
 TODO
-- Add meta box in Replies dashboard to show notes
 - Notify moderators / admins participating in thread of new notes posted
 */
 
@@ -65,20 +64,27 @@ class PW_BBP_Admin_Notes {
 		// load plugin text domain
 		add_action( 'init', array( __CLASS__, 'load_textdomain' ) );
 
+		// enable comments on the reply post type
+		add_action( 'init', array( __CLASS__, 'add_comment_support' ) );
+
+		// save new notes
+		add_action( 'init', array( __CLASS__, 'save_note' ) );
+
+		// removes the "Discussion" box
+		add_action( 'add_meta_boxes', array( __CLASS__, 'remove_comments_status_box' ) );
+
+		// load the notes CSS
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'notes_css' ) );
+
 		// append the notes to the bottom of replies
 		add_action( 'bbp_theme_after_reply_content', array( __CLASS__, 'reply_notes' ) );
 
 		// output the add note form
 		add_action( 'bbp_theme_after_reply_content', array( __CLASS__, 'add_note_form' ) );
 
-		// save new notes
-		add_action( 'init', array( __CLASS__, 'save_note' ) );
-
 		// output our custom JS
 		add_action( 'wp_footer', array( __CLASS__, 'notes_js' ) );
 
-		// load the notes CSS
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'notes_css' ) );
 
 	}
 
@@ -133,6 +139,35 @@ class PW_BBP_Admin_Notes {
 			load_plugin_textdomain( 'bbp-admin-notes', false, $lang_dir );
 		}
 	}
+
+
+	/**
+	 * Enable comment support
+	 *
+	 * This is just for showing the Comments meta box in edit.php
+	 *
+	 * @since v1.0.3
+	 *
+	 * @return void
+	 */
+
+	public function add_comment_support() {
+		add_post_type_support( bbp_get_reply_post_type(), 'comments' ) ;
+	}
+
+
+	/**
+	 * Remove "Discussion" meta box
+	 *
+	 * @since v1.0.3
+	 *
+	 * @return void
+	 */
+
+	public function remove_comments_status_box() {
+		remove_meta_box( 'commentstatusdiv', bbp_get_reply_post_type(), 'normal' );
+	}
+
 
 	/**
 	 * Add the admin links to topics and replies
