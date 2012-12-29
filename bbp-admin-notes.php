@@ -6,7 +6,7 @@ Description: Simple bbPress extension enabling admins to leave notes on topic re
 Version: 1.0.3
 Author: Pippin Williamson
 Author URI: http://pippinsplugins.com
-Contributors: mordauk 
+Contributors: mordauk
 
 
 TODO
@@ -184,7 +184,7 @@ class PW_BBP_Admin_Notes {
 
 	public function add_note_link( $links = '', $args = array() ) {
 
-		if( ! current_user_can( 'edit_forum', bbp_get_forum_id() ) )
+		if( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
 			return;
 
 		$reply_id = bbp_get_reply_id();
@@ -213,7 +213,7 @@ class PW_BBP_Admin_Notes {
 		if( bbp_is_topic( $reply_id ) )
 			return;
 
-		if( ! current_user_can( 'edit_forum', bbp_get_forum_id() ) )
+		if( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
 			return;
 
 		$notes = self::have_notes( $reply_id );
@@ -278,7 +278,7 @@ class PW_BBP_Admin_Notes {
 	 */
 
 	private function have_notes( $reply_id = 0 ) {
-	
+
 		$notes = self::get_notes( $reply_id );
 
 		return ! empty( $notes ) ? $notes : array();
@@ -315,7 +315,7 @@ class PW_BBP_Admin_Notes {
 
 	public function save_note() {
 
-		if( ! current_user_can( 'publish_forums' ) )
+		if( ! current_user_can( 'moderate' ) )
 			return;
 
 		if( empty( $_POST['bbp-add-note'] ) )
@@ -388,10 +388,10 @@ class PW_BBP_Admin_Notes {
 
 	public function notes_css() {
 		if( ! bbp_is_single_reply() && ! bbp_is_single_topic() )
-			return; 
+			return;
 
 		wp_enqueue_style( 'bbp-admin-notes', plugins_url( 'bbp-admin-notes.css', __FILE__ ) );
-		
+
 	}
 
 
