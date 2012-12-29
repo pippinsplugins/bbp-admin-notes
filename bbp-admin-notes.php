@@ -3,7 +3,7 @@
 Plugin Name: bbPress - Admin Notes
 Plugin URI: http://pippinsplugins.com/bbpress-admin-notes
 Description: Simple bbPress extension enabling admins to leave notes on topic replies
-Version: 1.0.3
+Version: 1.0.4
 Author: Pippin Williamson
 Author URI: http://pippinsplugins.com
 Contributors: mordauk
