@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @package	PW_BBP_Admin_Notes
  * @since	1.0
- * @version	1.0.5
+ * @version	1.0
  */
 final class PW_BBP_Admin_Notes {
 	/**
