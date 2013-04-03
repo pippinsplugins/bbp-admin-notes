@@ -1,12 +1,12 @@
 === bbPress - Admin Notes ===
 Author URI: http://pippinsplugins.com
 Plugin URI: http://pippinsplugins.com/bbpress-admin-notes
-Contributors: mordauk
+Contributors: mordauk, sunnyratilal
 Donate link: http://pippinsplugins.com/support-the-site
 Tags: bbPress, notes, forum comments, Forums, mordauk, Pippin Williamson, pippinsplugins
 Requires at least: 3.2
-Tested up to: 3.5
-Stable Tag: 1.0.4
+Tested up to: 3.6
+Stable Tag: 1.0.5
 
 
 A simple plugin to enable admins/editors to leave notes on bbPress topic replies.
@@ -21,6 +21,9 @@ This is a simple extension that allows forum admins and editors to leave notes o
 2. Bee happy
 
 == Changelog ==
+
+= 1.0.5 =
+* Send out an email to all subscribed forum moderators when a new admin note is added
 
 = 1.0.4 =
 
