@@ -347,7 +347,7 @@ final class PW_BBP_Admin_Notes {
 		$user_ids = bbp_get_topic_subscribers( $_POST['bbp-topic-id'] );
 
 		foreach ( (array) $user_ids as $user_id ) {
-			if ( ( ! empty( $reply_author ) && (int) $user_id == (int) $reply_author ) || user_can( $user_id, 'moderate' ) )
+			if ( ( (int) $user_id == (int) $user->ID ) || user_can( $user_id, 'moderate' ) )
 				continue;
 
 			$link = bbp_get_reply_url( $_POST['bbp-reply-id'] );
@@ -363,10 +363,10 @@ You are receiving this email because you subscribed to a forum topic.
 
 Login and visit the topic to unsubscribe from these emails.', 'bbp-admin-notes' ),
 
-			get_the_author_meta( 'display_name', $user->ID ),
-			$reply_note,
-			$link
-		);
+				get_the_author_meta( 'display_name', $user->ID ),
+				$reply_note,
+				$link
+			);
 
 			// For plugins to filter titles per reply/topic/user
 			$subject = '[' . wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ) . '] ' . strip_tags( bbp_get_topic_title( $_POST['bbp-topic-id'] ) ) . ' (' . __( 'New Admin Note', 'bbp-admin-notes' ) . ')';
