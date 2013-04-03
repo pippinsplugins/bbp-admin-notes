@@ -374,10 +374,10 @@ Login and visit the topic to unsubscribe from these emails.', 'bbp-admin-notes' 
 			$headers = apply_filters( 'bbp_subscription_mail_headers', array() );
 
 			// Get user data of this user
-			$user = get_userdata( $user_id );
+			$user_data = get_userdata( $user_id );
 
 			// Send notification email
-			wp_mail( $user->user_email, $subject, $message, $headers );
+			wp_mail( $user_data->user_email, $subject, $message, $headers );
 		}
 
 		return $note_id;
