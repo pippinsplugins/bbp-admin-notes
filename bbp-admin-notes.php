@@ -347,7 +347,10 @@ final class PW_BBP_Admin_Notes {
 		$user_ids = bbp_get_topic_subscribers( $_POST['bbp-topic-id'] );
 
 		foreach ( (array) $user_ids as $user_id ) {
-			if ( ( (int) $user_id == (int) $user->ID ) || user_can( $user_id, 'moderate' ) )
+			if ( ( (int) $user_id == (int) $user->ID ) )
+				continue;
+
+			if ( ! user_can( $user_id, 'moderate' ) )
 				continue;
 
 			$link = bbp_get_reply_url( $_POST['bbp-reply-id'] );
