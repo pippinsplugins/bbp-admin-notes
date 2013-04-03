@@ -1,124 +1,138 @@
 <?php
-/*
-Plugin Name: bbPress - Admin Notes
-Plugin URI: http://pippinsplugins.com/bbpress-admin-notes
-Description: Simple bbPress extension enabling admins to leave notes on topic replies
-Version: 1.0.4
-Author: Pippin Williamson
-Author URI: http://pippinsplugins.com
-Contributors: mordauk
+/**
+ * Plugin Name: bbPress - Admin Notes
+ * Plugin URI: http://pippinsplugins.com/bbpress-admin-notes
+ * Description: Simple bbPress extension enabling admins to leave notes on topic replies
+ * Author: Pippin Williamson
+ * Author URI: http://pippinsplugins.com
+ * Version: 1.0.4
+ * Contributors: mordauk, sunnyratilal
+ * Requires at least: 3.2
+ * Tested up to: 3.6
+ *
+ * Text Domain: bbp-admin-notes
+ *
+ * Copyright 2013 Pippin Williamson
+ *
+ * @package		PW_BBP_Admin_Notes
+ * @category 	Core
+ * @author		Pippin Williamson
+ * @version 	1.0.5
+ */
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-TODO
-- Notify moderators / admins participating in thread of new notes posted
-*/
-
-class PW_BBP_Admin_Notes {
-
+/**
+ * PW_BBP_Admin_Notes Class
+ *
+ * @package	PW_BBP_Admin_Notes
+ * @since	1.0
+ * @version	1.0
+ */
+final class PW_BBP_Admin_Notes {
 	/**
-	 * @var bbp Admin Notes instance
+	 * Holds the instance
+	 *
+	 * Ensures that only one instance of bbPress Admin Notes exists in memory at any one
+	 * time and it also prevents needing to define globals all over the place.
+	 *
+	 * @var object
+	 * @static
+	 * @since 1.0
 	 */
-
 	private static $instance;
 
-
 	/**
-	 * Main class instance
+	 * Get the instance and store the class inside it. This plugin utilises
+	 * the PHP singleton design pattern.
 	 *
-	 * @since v1.0
-	 *
-	 * @return the class instance
+	 * @since 1.0
+	 * @static
+	 * @staticvar array $instance
+	 * @access public
+	 * @uses PW_BBP_Admin_Notes::actions()
+	 * @uses PW_BBP_Admin_Notes::filters()
+	 * @return object self::$instance Instance
 	 */
-
 	public static function instance() {
 		if ( ! isset( self::$instance ) ) {
 			self::$instance = new PW_BBP_Admin_Notes;
 			self::$instance->actions();
 			self::$instance->filters();
 		}
+
 		return self::$instance;
 	}
-
 
 	/**
 	 * Dummy constructor
 	 *
-	 * @since v1.0
-	 *
+	 * @since 1.0
+	 * @access protected
 	 * @return void
 	 */
-
 	private function __construct() { /* nothing here */ }
 
 
 	/**
 	 * Add all actions we need
 	 *
-	 * @since v1.0
-	 *
+	 * @since 1.0
+	 * @access private
 	 * @return void
 	 */
-
 	private function actions() {
+		// Load plugin textdomain
+		add_action( 'init', array( $this, 'load_textdomain' ) );
 
-		// load plugin text domain
-		add_action( 'init', array( __CLASS__, 'load_textdomain' ) );
+		// Enable comments on the reply post type
+		add_action( 'init', array( $this, 'add_comment_support' ) );
 
-		// enable comments on the reply post type
-		add_action( 'init', array( __CLASS__, 'add_comment_support' ) );
+		// Save the new notes
+		add_action( 'init', array( $this, 'save_note' ) );
 
-		// save new notes
-		add_action( 'init', array( __CLASS__, 'save_note' ) );
+		// Removes the "Discussion" box
+		add_action( 'add_meta_boxes', array( $this, 'remove_comments_status_box' ) );
 
-		// removes the "Discussion" box
-		add_action( 'add_meta_boxes', array( __CLASS__, 'remove_comments_status_box' ) );
+		// Load the notes CSS
+		add_action( 'wp_enqueue_scripts', array( $this, 'notes_css' ) );
 
-		// load the notes CSS
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'notes_css' ) );
+		// Append the notes to the bottom of replies
+		add_action( 'bbp_theme_after_reply_content', array( $this, 'reply_notes' ) );
 
-		// append the notes to the bottom of replies
-		add_action( 'bbp_theme_after_reply_content', array( __CLASS__, 'reply_notes' ) );
+		// Output the "Add Notes" form
+		add_action( 'bbp_theme_after_reply_content', array( $this, 'add_note_form' ) );
 
-		// output the add note form
-		add_action( 'bbp_theme_after_reply_content', array( __CLASS__, 'add_note_form' ) );
-
-		// output our custom JS
-		add_action( 'wp_footer', array( __CLASS__, 'notes_js' ) );
-
-
+		// Output our custom JS for the "Add Notes" form
+		add_action( 'wp_footer', array( $this, 'notes_js' ) );
 	}
 
 
 	/**
 	 * Add all filters we need
 	 *
-	 * @since v1.0
-	 *
+	 * @since 1.0
+	 * @access private
 	 * @return void
 	 */
-
 	private function filters() {
-
-		// add our custom admin links
-		add_filter( 'bbp_get_reply_admin_links', array( __CLASS__, 'add_note_link' ), 10, 2 );
-
+		// Add our custom admin links
+		add_filter( 'bbp_get_reply_admin_links', array( $this, 'add_note_link' ), 10, 2 );
 	}
 
 
 	/**
 	 * Loads the plugin textdomain
 	 *
-	 * @since v1.0
-	 *
+	 * @since 1.0
+	 * @access public
 	 * @return bool
 	 */
-
 	public function load_textdomain() {
-
 		// Set filter for plugin's languages directory
 		$lang_dir = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
 		$lang_dir = apply_filters( 'bbp_admin_notes_languages', $lang_dir );
-
 
 		// Traditional WordPress plugin locale filter
 		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'bbp-admin-notes' );
@@ -140,34 +154,29 @@ class PW_BBP_Admin_Notes {
 		}
 	}
 
-
 	/**
 	 * Enable comment support
 	 *
 	 * This is just for showing the Comments meta box in edit.php
 	 *
 	 * @since v1.0.3
-	 *
+	 * @access public
 	 * @return void
 	 */
-
 	public function add_comment_support() {
 		add_post_type_support( bbp_get_reply_post_type(), 'comments' ) ;
 	}
-
 
 	/**
 	 * Remove "Discussion" meta box
 	 *
 	 * @since v1.0.3
-	 *
+	 * @access public
 	 * @return void
 	 */
-
 	public function remove_comments_status_box() {
 		remove_meta_box( 'commentstatusdiv', bbp_get_reply_post_type(), 'normal' );
 	}
-
 
 	/**
 	 * Add the admin links to topics and replies
@@ -175,16 +184,14 @@ class PW_BBP_Admin_Notes {
 	 * This is kind of a hacky way of doing this for now
 	 * Once http://bbpress.trac.wordpress.org/ticket/2090 gets implemented in some form, I will refactor this
 	 *
-	 * @since v1.0
+	 * @since 1.0
+	 * @access public
 	 * @param $links string The HTML string of all existing admin links
 	 * @param $args array All arguments passed from bbPress
-	 *
 	 * @return string
 	 */
-
 	public function add_note_link( $links = '', $args = array() ) {
-
-		if( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
+		if ( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
 			return;
 
 		$reply_id = bbp_get_reply_id();
@@ -200,25 +207,24 @@ class PW_BBP_Admin_Notes {
 	/**
 	 * Shows the notes at the bottom of each reply
 	 *
-	 * @since v1.0
-	 *
+	 * @since 1.0
+	 * @access public
 	 * @return void
 	 */
-
 	public function reply_notes() {
 		$reply_id = bbp_get_reply_id();
 		$topic_id = bbp_get_topic_id();
 
 		// only show the form on replies after the main topic reply
-		if( bbp_is_topic( $reply_id ) )
+		if ( bbp_is_topic( $reply_id ) )
 			return;
 
-		if( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
+		if ( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
 			return;
 
-		$notes = self::have_notes( $reply_id );
+		$notes = $this->have_notes( $reply_id );
 
-		if( empty( $notes ) )
+		if ( empty( $notes ) )
 			return;
 
 ?>
@@ -233,25 +239,21 @@ class PW_BBP_Admin_Notes {
 			<?php endforeach; ?>
 		</ul>
 <?php
-
 	}
-
 
 	/**
 	 * Attach the Add Note form to the bottom of replies
 	 *
 	 * @since v1.0
-	 *
+	 * @access public
 	 * @return void
 	 */
-
 	public function add_note_form() {
-
 		$reply_id = bbp_get_reply_id();
 		$topic_id = bbp_get_topic_id();
 
 		// only show the form on replies after the main topic reply
-		if( bbp_is_topic( $reply_id ) )
+		if ( bbp_is_topic( $reply_id ) )
 			return;
 ?>
 		<form id="bbp-add-note-form-<?php bbp_reply_id(); ?>" class="bbp-add-note-form" method="post" action="<?php echo get_permalink( $topic_id ); ?>#post-<?php bbp_reply_id(); ?>" style="display:none">
@@ -261,38 +263,35 @@ class PW_BBP_Admin_Notes {
 			</div>
 			<div>
 				<input type="hidden" name="bbp-reply-id" value="<?php bbp_reply_id(); ?>" />
+				<input type="hidden" name="bbp-topic-id" value="<?php bbp_topic_id(); ?>" />
 				<input type="submit" name="bbp-add-note" value="<?php _e( 'Add Note', 'bbp-admin-notes' ); ?>" />
 			</div>
 		</form>
 <?php
 	}
 
-
-
 	/**
 	 * Does the reply have any notes?
 	 *
-	 * @since v1.0
-	 *
-	 * @return array The notes attached to the reply
+	 * @since 1.0
+	 * @access private
+	 * @param int $reply_id Reply ID
+	 * @return array $notes The notes attached to the reply
 	 */
-
 	private function have_notes( $reply_id = 0 ) {
-
-		$notes = self::get_notes( $reply_id );
+		$notes = $this->get_notes( $reply_id );
 
 		return ! empty( $notes ) ? $notes : array();
 	}
 
-
 	/**
 	 * Retrieve the notes for the specified reply
 	 *
-	 * @since v1.0
-	 *
-	 * @return array/bool Array of notes if the reply has notes, false if not
+	 * @since 1.0
+	 * @access private
+	 * @param int $reply_id Reply ID
+	 * @return mixed Array of notes if the reply has notes, false if not
 	 */
-
 	private function get_notes( $reply_id = 0 ) {
 		$notes = get_comments( array(
 			'post_id' => $reply_id,
@@ -304,24 +303,22 @@ class PW_BBP_Admin_Notes {
 		return false;
 	}
 
-
 	/**
 	 * Store a new note
 	 *
-	 * @since v1.0
-	 *
+	 * @since 1.0
+	 * @access public
 	 * @return int The ID of the new note
 	 */
-
 	public function save_note() {
 
-		if( ! current_user_can( 'moderate' ) )
+		if ( ! current_user_can( 'moderate' ) )
 			return;
 
-		if( empty( $_POST['bbp-add-note'] ) )
+		if ( empty( $_POST['bbp-add-note'] ) )
 			return;
 
-		if( empty( $_POST['bbp-reply-id'] ) )
+		if ( empty( $_POST['bbp-reply-id'] ) )
 			return;
 
 		$reply_id   = absint( $_POST['bbp-reply-id'] );
@@ -346,15 +343,51 @@ class PW_BBP_Admin_Notes {
 
 		) ) );
 
+		/** Email all moderators who are suscribed to this topic */
+		$user_ids = bbp_get_topic_subscribers( $_POST['bbp-topic-id'] );
+
+		foreach ( (array) $user_ids as $user_id ) {
+			if ( ! empty( $reply_author ) && (int) $user_id == (int) $reply_author ) || user_can( $user_id, 'moderate' )
+				continue;
+
+			$link = bbp_get_reply_url( $_POST['bbp-reply-id'] );
+
+			$message = sprintf( __( '%1$s added a new note on:
+
+%2$s
+-----------
+
+View note: %3$s
+
+You are receiving this email because you subscribed to a forum topic.
+
+Login and visit the topic to unsubscribe from these emails.', 'bbp-admin-notes' ),
+
+			get_the_author_meta( 'display_name', $user->ID ),
+			$reply_note,
+			$link
+		);
+
+			// For plugins to filter titles per reply/topic/user
+			$subject = '[' . wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ) . '] ' . strip_tags( bbp_get_topic_title( $_POST['bbp-topic-id'] ) ) . ' (' . __( 'New Admin Note', 'bbp-admin-notes' ) . ')';
+
+			$headers = apply_filters( 'bbp_subscription_mail_headers', array() );
+
+			// Get user data of this user
+			$user = get_userdata( $user_id );
+
+			// Send notification email
+			wp_mail( $user->user_email, $subject, $message, $headers );
+		}
+
 		return $note_id;
 	}
-
 
 	/**
 	 * Output the JS to show the Add Note form
 	 *
-	 * @since v1.0
-	 *
+	 * @since 1.0
+	 * @access public
 	 * @return void
 	 */
 
@@ -387,15 +420,12 @@ class PW_BBP_Admin_Notes {
 	 */
 
 	public function notes_css() {
-		if( ! bbp_is_single_reply() && ! bbp_is_single_topic() )
+		if ( ! bbp_is_single_reply() && ! bbp_is_single_topic() )
 			return;
 
 		wp_enqueue_style( 'bbp-admin-notes', plugins_url( 'bbp-admin-notes.css', __FILE__ ) );
-
 	}
-
-
 }
 
-// load our class
+// Load our class
 $GLOBALS['pw_bbp_admin_notes'] = PW_BBP_Admin_Notes::instance();
