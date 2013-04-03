@@ -5,7 +5,7 @@
  * Description: Simple bbPress extension enabling admins to leave notes on topic replies
  * Author: Pippin Williamson
  * Author URI: http://pippinsplugins.com
- * Version: 1.0.4
+ * Version: 1.0.5
  * Contributors: mordauk, sunnyratilal
  * Requires at least: 3.2
  * Tested up to: 3.6
