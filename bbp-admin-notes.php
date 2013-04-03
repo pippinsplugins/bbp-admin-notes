@@ -7,7 +7,7 @@
  * Author URI: http://pippinsplugins.com
  * Version: 1.0.4
  * Contributors: mordauk, sunnyratilal
- * Requires at least: 3.5
+ * Requires at least: 3.2
  * Tested up to: 3.6
  *
  * Text Domain: bbp-admin-notes
@@ -17,7 +17,7 @@
  * @package		PW_BBP_Admin_Notes
  * @category 	Core
  * @author		Pippin Williamson
- * @version 	1.0.4
+ * @version 	1.0.5
  */
 
 // Exit if accessed directly
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @package	PW_BBP_Admin_Notes
  * @since	1.0
- * @version	1.0.4
+ * @version	1.0.5
  */
 final class PW_BBP_Admin_Notes {
 	/**
