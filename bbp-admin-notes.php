@@ -121,8 +121,8 @@ final class PW_BBP_Admin_Notes {
 		// Add our custom admin links
 		add_filter( 'bbp_get_topic_admin_links', array( $this, 'add_topic_note_link'   ), 10, 2 );
 		add_filter( 'bbp_get_reply_admin_links', array( $this, 'add_reply_note_link'   ), 10, 2 );
-		add_filter( 'comments_clauses',          array( $this, 'hidenotes'             ), 10, 2 );
-		add_filter( 'comment_feed_where',        array( $this, 'hide_notes_from_feeds' ), 10, 2 );
+		add_filter( 'comments_clauses',          array( $this, 'hidenotes'             ), 999, 2 );
+		add_filter( 'comment_feed_where',        array( $this, 'hide_notes_from_feeds' ), 999, 2 );
 	}
 
 
@@ -317,7 +317,8 @@ final class PW_BBP_Admin_Notes {
 	private function get_notes( $reply_id = 0 ) {
 		$notes = get_comments( array(
 			'post_id' => $reply_id,
-			'order'   => 'ASC'
+			'order'   => 'ASC',
+			'comment_type'    => 'bbp_note'
 		) );
 
 		if( ! empty( $notes ) )
@@ -423,6 +424,10 @@ Login and visit the topic to unsubscribe from these emails.', 'bbp-admin-notes' 
 	 */
 	function hidenotes( $clauses, $wp_comment_query ) {
 	    global $wpdb;
+
+		if( isset( $wp_comment_query->query_vars['comment_type'] ) && 'bbp_note' == $wp_comment_query->query_vars['comment_type'] )
+			return $clauses;
+
 		$clauses['where'] .= ' AND comment_type != "bbp_note"';
 	    return $clauses;
 	}
@@ -437,6 +442,9 @@ Login and visit the topic to unsubscribe from these emails.', 'bbp-admin-notes' 
 	 */
 	function hide_notes_from_feeds( $where, $wp_comment_query ) {
 	    global $wpdb;
+
+	    if( isset( $wp_comment_query->query_vars['comment_type'] ) && 'bbp_note' == $wp_comment_query->query_vars['comment_type'] )
+			return $where;
 
 		$where .= $wpdb->prepare( " AND comment_type != %s", 'bbp_note' );
 		return $where;
