@@ -5,7 +5,7 @@
  * Description: Simple bbPress extension enabling admins to leave notes on topic replies
  * Author: Pippin Williamson
  * Author URI: http://pippinsplugins.com
- * Version: 1.0.5
+ * Version: 1.1
  * Contributors: mordauk, sunnyratilal
  * Requires at least: 3.2
  * Tested up to: 3.6
@@ -17,7 +17,7 @@
  * @package		PW_BBP_Admin_Notes
  * @category 	Core
  * @author		Pippin Williamson
- * @version 	1.0.5
+ * @version 	1.1
  */
 
 // Exit if accessed directly
@@ -102,6 +102,7 @@ final class PW_BBP_Admin_Notes {
 		add_action( 'bbp_theme_after_reply_content', array( $this, 'reply_notes' ) );
 
 		// Output the "Add Notes" form
+		add_action( 'bbp_theme_after_topicy_content', array( $this, 'add_note_form' ) );
 		add_action( 'bbp_theme_after_reply_content', array( $this, 'add_note_form' ) );
 
 		// Output our custom JS for the "Add Notes" form
@@ -118,7 +119,10 @@ final class PW_BBP_Admin_Notes {
 	 */
 	private function filters() {
 		// Add our custom admin links
-		add_filter( 'bbp_get_reply_admin_links', array( $this, 'add_note_link' ), 10, 2 );
+		add_filter( 'bbp_get_topic_admin_links', array( $this, 'add_topic_note_link'   ), 10, 2 );
+		add_filter( 'bbp_get_reply_admin_links', array( $this, 'add_reply_note_link'   ), 10, 2 );
+		add_filter( 'comments_clauses',          array( $this, 'hidenotes'             ), 10, 2 );
+		add_filter( 'comment_feed_where',        array( $this, 'hide_notes_from_feeds' ), 10, 2 );
 	}
 
 
@@ -164,6 +168,7 @@ final class PW_BBP_Admin_Notes {
 	 * @return void
 	 */
 	public function add_comment_support() {
+		add_post_type_support( bbp_get_topic_post_type(), 'comments' ) ;
 		add_post_type_support( bbp_get_reply_post_type(), 'comments' ) ;
 	}
 
@@ -175,6 +180,7 @@ final class PW_BBP_Admin_Notes {
 	 * @return void
 	 */
 	public function remove_comments_status_box() {
+		remove_meta_box( 'commentstatusdiv', bbp_get_topic_post_type(), 'normal' );
 		remove_meta_box( 'commentstatusdiv', bbp_get_reply_post_type(), 'normal' );
 	}
 
@@ -190,7 +196,32 @@ final class PW_BBP_Admin_Notes {
 	 * @param $args array All arguments passed from bbPress
 	 * @return string
 	 */
-	public function add_note_link( $links = '', $args = array() ) {
+	public function add_topic_note_link( $links = '', $args = array() ) {
+		if ( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
+			return;
+
+		$topic_id = bbp_get_topic_id();
+
+		$links .= $args['before'];
+			$links .= '<a href="#" class="bbp-add-note bbp-add-note-' . $topic_id . '" data-id="' . $topic_id . '">' . __( 'Add Note', 'bbp-admin-notes' ) . '</a>';
+			$links .= '<a href="#" class="bbp-add-note bbp-add-note-' . $topic_id . '" style="display:none;" data-id="' . $topic_id . '">' . __( 'Hide Note', 'bbp-admin-notes' ) . '</a>';
+			$links .= $args['sep'] . '&nbsp;' . $args['after'];
+		return $links;
+	}
+
+	/**
+	 * Add the admin links to topics and replies
+	 *
+	 * This is kind of a hacky way of doing this for now
+	 * Once http://bbpress.trac.wordpress.org/ticket/2090 gets implemented in some form, I will refactor this
+	 *
+	 * @since 1.0
+	 * @access public
+	 * @param $links string The HTML string of all existing admin links
+	 * @param $args array All arguments passed from bbPress
+	 * @return string
+	 */
+	public function add_reply_note_link( $links = '', $args = array() ) {
 		if ( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
 			return;
 
@@ -214,10 +245,6 @@ final class PW_BBP_Admin_Notes {
 	public function reply_notes() {
 		$reply_id = bbp_get_reply_id();
 		$topic_id = bbp_get_topic_id();
-
-		// only show the form on replies after the main topic reply
-		if ( bbp_is_topic( $reply_id ) )
-			return;
 
 		if ( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
 			return;
@@ -252,9 +279,6 @@ final class PW_BBP_Admin_Notes {
 		$reply_id = bbp_get_reply_id();
 		$topic_id = bbp_get_topic_id();
 
-		// only show the form on replies after the main topic reply
-		if ( bbp_is_topic( $reply_id ) )
-			return;
 ?>
 		<form id="bbp-add-note-form-<?php bbp_reply_id(); ?>" class="bbp-add-note-form" method="post" action="<?php echo get_permalink( $topic_id ); ?>#post-<?php bbp_reply_id(); ?>" style="display:none">
 			<div>
@@ -275,11 +299,11 @@ final class PW_BBP_Admin_Notes {
 	 *
 	 * @since 1.0
 	 * @access private
-	 * @param int $reply_id Reply ID
+	 * @param int $object_id Reply or Topic ID
 	 * @return array $notes The notes attached to the reply
 	 */
-	private function have_notes( $reply_id = 0 ) {
-		$notes = $this->get_notes( $reply_id );
+	private function have_notes( $object_id = 0 ) {
+		$notes = $this->get_notes( $object_id );
 
 		return ! empty( $notes ) ? $notes : array();
 	}
@@ -340,6 +364,7 @@ final class PW_BBP_Admin_Notes {
 			'comment_date_gmt'     => current_time( 'mysql', 1 ),
 			'comment_approved'     => 1,
 			'comment_parent'       => 0,
+			'comment_type'         => 'bbp_note',
 
 		) ) );
 
@@ -384,6 +409,36 @@ Login and visit the topic to unsubscribe from these emails.', 'bbp-admin-notes' 
 		}
 
 		return $note_id;
+	}
+
+	/**
+	 * Exclude notes (comments) on bbPress post types from showing in Recent
+	 * Comments widgets and other locations
+	 *
+	 * @since 1.1
+	 * @param array $clauses Comment clauses for comment query
+	 * @param obj $wp_comment_query WordPress Comment Query Object
+	 * @return array $clauses Updated comment clauses
+	 */
+	function hidenotes( $clauses, $wp_comment_query ) {
+	    global $wpdb;
+		$clauses['where'] .= ' AND comment_type != "bbp_note"';
+	    return $clauses;
+	}
+
+	/**
+	 * Exclude notes (comments) on bbPress post types from showing in comment feeds
+	 *
+	 * @since 1.1
+	 * @param array $where
+	 * @param obj $wp_comment_query WordPress Comment Query Object
+	 * @return array $where
+	 */
+	function hide_notes_from_feeds( $where, $wp_comment_query ) {
+	    global $wpdb;
+
+		$where .= $wpdb->prepare( " AND comment_type != %s", 'bbp_note' );
+		return $where;
 	}
 
 	/**
