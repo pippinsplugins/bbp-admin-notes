@@ -6,7 +6,7 @@ Donate link: http://pippinsplugins.com/support-the-site
 Tags: bbPress, notes, forum comments, Forums, mordauk, Pippin Williamson, pippinsplugins
 Requires at least: 3.2
 Tested up to: 3.6
-Stable Tag: 1.1
+Stable Tag: 1.2
 
 
 A simple plugin to enable admins/editors to leave notes on bbPress topic replies.
@@ -21,6 +21,10 @@ This is a simple extension that allows forum admins and editors to leave notes o
 2. Bee happy
 
 == Changelog ==
+
+= 1.2 =
+* Fixed a bug with notes not showing on replies
+* Fixed a bug that allowed notes to show up in comment feeds and widgets
 
 = 1.1 =
 * Added support for posting notes to topic's lead replies
