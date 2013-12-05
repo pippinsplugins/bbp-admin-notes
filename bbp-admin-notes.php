@@ -99,7 +99,7 @@ final class PW_BBP_Admin_Notes {
 		add_action( 'wp_enqueue_scripts', array( $this, 'notes_css' ) );
 
 		// Append the notes to the bottom of replies
-		add_action( 'bbp_theme_after_reply_content', array( $this, 'reply_notes' ) );
+		add_action( 'bbp_theme_after_reply_content', array( $this, 'notes' ) );
 
 		// Output the "Add Notes" form
 		add_action( 'bbp_theme_after_topicy_content', array( $this, 'add_note_form' ) );
@@ -242,15 +242,13 @@ final class PW_BBP_Admin_Notes {
 	 * @access public
 	 * @return void
 	 */
-	public function reply_notes() {
-		$reply_id = bbp_get_reply_id();
-		$topic_id = bbp_get_topic_id();
+	public function notes() {
 
 		if ( ! current_user_can( 'moderate', bbp_get_forum_id() ) )
 			return;
 
-		$notes = $this->have_notes( $reply_id );
-
+		$reply_id = bbp_get_reply_id();
+		$notes    = $this->have_notes( $reply_id );
 		if ( empty( $notes ) )
 			return;
 
