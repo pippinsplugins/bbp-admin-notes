@@ -347,6 +347,9 @@ final class PW_BBP_Admin_Notes {
 
 		$reply_note = wp_kses( $_POST['bbp-reply-note'], array() );
 
+		if( empty( $reply_note ) )
+			return;
+
 		$user = get_userdata( get_current_user_id() );
 
 		$note_id = wp_insert_comment( wp_filter_comment( array(
