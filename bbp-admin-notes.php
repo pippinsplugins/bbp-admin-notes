@@ -5,7 +5,7 @@
  * Description: Simple bbPress extension enabling admins to leave notes on topic replies
  * Author: Pippin Williamson
  * Author URI: http://pippinsplugins.com
- * Version: 1.2
+ * Version: 1.2.1
  * Contributors: mordauk, sunnyratilal
  * Requires at least: 3.2
  * Tested up to: 3.6
@@ -28,7 +28,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @package	PW_BBP_Admin_Notes
  * @since	1.0
- * @version	1.0
  */
 final class PW_BBP_Admin_Notes {
 	/**
@@ -119,7 +118,7 @@ final class PW_BBP_Admin_Notes {
 	 */
 	private function filters() {
 		// Add our custom admin links
-		add_filter( 'bbp_get_topic_admin_links', array( $this, 'add_topic_note_link'   ), 10, 2 );
+		add_filter( 'bbp_get_topic_admin_links', array( $this, 'add_topic_note_link'   ), 15, 2 );
 		add_filter( 'bbp_get_reply_admin_links', array( $this, 'add_reply_note_link'   ), 10, 2 );
 		add_filter( 'comments_clauses',          array( $this, 'hidenotes'             ), 999, 2 );
 		add_filter( 'comment_feed_where',        array( $this, 'hide_notes_from_feeds' ), 999, 2 );
