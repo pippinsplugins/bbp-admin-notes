@@ -8,7 +8,7 @@
  * Version: 1.2.1
  * Contributors: mordauk, sunnyratilal
  * Requires at least: 3.2
- * Tested up to: 3.6
+ * Tested up to: 3.8
  *
  * Text Domain: bbp-admin-notes
  *

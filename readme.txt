@@ -5,7 +5,7 @@ Contributors: mordauk, sunnyratilal
 Donate link: http://pippinsplugins.com/support-the-site
 Tags: bbPress, notes, forum comments, Forums, mordauk, Pippin Williamson, pippinsplugins
 Requires at least: 3.2
-Tested up to: 3.6
+Tested up to: 3.8
 Stable Tag: 1.2.1
 
 
