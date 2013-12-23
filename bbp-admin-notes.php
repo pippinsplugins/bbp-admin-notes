@@ -167,6 +167,10 @@ final class PW_BBP_Admin_Notes {
 	 * @return void
 	 */
 	public function add_comment_support() {
+
+		if( ! function_exists( 'bbp_get_topic_post_type' ) )
+			return;
+
 		add_post_type_support( bbp_get_topic_post_type(), 'comments' ) ;
 		add_post_type_support( bbp_get_reply_post_type(), 'comments' ) ;
 	}
@@ -179,6 +183,10 @@ final class PW_BBP_Admin_Notes {
 	 * @return void
 	 */
 	public function remove_comments_status_box() {
+
+		if( ! function_exists( 'bbp_get_topic_post_type' ) )
+			return;
+
 		remove_meta_box( 'commentstatusdiv', bbp_get_topic_post_type(), 'normal' );
 		remove_meta_box( 'commentstatusdiv', bbp_get_reply_post_type(), 'normal' );
 	}
