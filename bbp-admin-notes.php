@@ -434,8 +434,9 @@ Login and visit the topic to unsubscribe from these emails.', 'bbp-admin-notes' 
 
 		if( isset( $wp_comment_query->query_vars['comment_type'] ) && 'bbp_note' == $wp_comment_query->query_vars['comment_type'] )
 			return $clauses;
-
-		$clauses['where'] .= ' AND comment_type != "bbp_note"';
+		if ( strlen( trim( $clauses['where'] ) ) > 0 )
+			$clauses['where'] .= ' AND ';
+		$clauses['where'] .= ' comment_type != "bbp_note"';
 	    return $clauses;
 	}
 
@@ -452,8 +453,9 @@ Login and visit the topic to unsubscribe from these emails.', 'bbp-admin-notes' 
 
 	    if( isset( $wp_comment_query->query_vars['comment_type'] ) && 'bbp_note' == $wp_comment_query->query_vars['comment_type'] )
 			return $where;
-
-		$where .= $wpdb->prepare( " AND comment_type != %s", 'bbp_note' );
+		if ( strlen( trim( $where ) ) > 0 )
+			$where .= ' AND ';
+		$where .= " comment_type != 'bbp_note' ";
 		return $where;
 	}
 
