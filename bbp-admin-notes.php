@@ -455,7 +455,7 @@ Login and visit the topic to unsubscribe from these emails.', 'bbp-admin-notes' 
 			return $where;
 		if ( strlen( trim( $where ) ) > 0 )
 			$where .= ' AND ';
-		$where .= $wpdb->prepare( " comment_type != %s", 'bbp_note' );
+		$where .= " comment_type != 'bbp_note' ";
 		return $where;
 	}
 
