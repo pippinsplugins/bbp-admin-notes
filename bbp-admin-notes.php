@@ -101,7 +101,7 @@ final class PW_BBP_Admin_Notes {
 		add_action( 'bbp_theme_after_reply_content', array( $this, 'notes' ) );
 
 		// Output the "Add Notes" form
-		add_action( 'bbp_theme_after_topicy_content', array( $this, 'add_note_form' ) );
+		add_action( 'bbp_theme_after_topic_content', array( $this, 'add_note_form' ) );
 		add_action( 'bbp_theme_after_reply_content', array( $this, 'add_note_form' ) );
 
 		// Output our custom JS for the "Add Notes" form
